@@ -8,19 +8,13 @@ return {
       -- Only load if `make` is available. Make sure you have the system
       -- requirements installed.
       {
-        'nvim-telescope/telescope-fzf-native.nvim',
-        -- NOTE: If you are having trouble with this installation,
-        --       refer to the README for telescope-fzf-native for more instructions.
-        build = 'make',
-        cond = function()
-          return vim.fn.executable 'make' == 1
-        end,
+        "nvim-telescope/telescope-fzf-native.nvim",
+        build = "make",
       },
     },
     config = function()
       local telescope = require('telescope')
-      telescope.load_extension 'projects'
-      telescope.load_extension 'fzf'
+      telescope.load_extension('projects')
       telescope.setup {
         defaults = {
           mappings = {
@@ -57,6 +51,7 @@ return {
           },
         },
       }
+      telescope.load_extension('fzf')
     end
   },
 }

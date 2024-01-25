@@ -26,24 +26,18 @@ return {
           lualine_y = { 'progress' },
           lualine_z = { 'location' }
         },
-        inactive_sections = {
-          lualine_a = {},
-          lualine_b = {},
-          lualine_c = { 'filename' },
-          lualine_x = { 'location' },
-          lualine_y = {},
-          lualine_z = {}
-        },
-        tabline = {
-          lualine_a = { "filename" },
-          lualine_b = {},
-          lualine_c = {},
-          lualine_x = {},
-          lualine_y = {},
-          lualine_z = { "tabs" }
-        },
+        inactive_sections = {},
+        tabline = {},
+        -- tabline = {
+        -- lualine_a = { "filename" },
+        -- lualine_b = {},
+        -- lualine_c = {},
+        -- lualine_x = {},
+        -- lualine_y = {},
+        -- lualine_z = { "tabs" }
+        -- },
         winbar = {
-          lualine_a = { "location" },
+          lualine_a = {},
           lualine_b = {},
           lualine_c = {
             {
@@ -60,7 +54,7 @@ return {
           lualine_z = {}
         },
         inactive_winbar = {
-          lualine_a = { "location" },
+          lualine_a = {},
           lualine_b = {},
           lualine_c = {
             {
