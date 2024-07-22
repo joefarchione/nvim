@@ -106,6 +106,7 @@ wk.register({
     },
     e = {
       f = { "<cmd>Neotree toggle position=float reveal=true<cr>", "Float" },
+      e = { "<cmd>Neotree toggle position=left reveal=true<cr>", "Left" },
       name = "Explorer"
     },
     f = {
@@ -143,7 +144,7 @@ wk.register({
           local cwd = vim.fn.stdpath "config" .. "/.."
           require("telescope.builtin").find_files {
             prompt_title = "Config Files",
-            search_dirs = { "~/.config/nvim" },
+            search_dirs = { "~/.config/nvim", "~/AppData/Local/nvim" },
             cwd = cwd,
             follow = true,
           } -- call telescope
