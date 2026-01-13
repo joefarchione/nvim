@@ -1,0 +1,5 @@
+require "joe.config.options"
+require "joe.config.lazy"
+require "joe.config.keymaps"
+require "joe.config.autocmds"
+require "joe.config.commands"
