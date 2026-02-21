@@ -9,7 +9,7 @@ return {
         "jay-babu/mason-nvim-dap.nvim",
         dependencies = "mason.nvim",
         opts = {
-          ensure_installed = { "debugpy" },
+          ensure_installed = { "debugpy", "netcoredbg" },
           automatic_installation = true,
         },
       },
@@ -37,6 +37,26 @@ return {
     config = function()
       local dap = require "dap"
       local dapui = require "dapui"
+
+      -- .NET Debugger (netcoredbg)
+      dap.adapters.coreclr = {
+        type = "executable",
+        command = vim.fn.has "win32" == 1 and "netcoredbg.exe" or "netcoredbg",
+        args = { "--interpreter=vscode" },
+      }
+
+      for _, lang in ipairs { "cs", "fsharp", "vb" } do
+        dap.configurations[lang] = {
+          {
+            type = "coreclr",
+            name = "launch - netcoredbg",
+            request = "launch",
+            program = function()
+              return vim.fn.input("Path to dll", vim.fn.getcwd() .. "/bin/Debug/", "file")
+            end,
+          },
+        }
+      end
 
       -- DAP UI setup
       ---@diagnostic disable-next-line: missing-fields
