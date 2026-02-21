@@ -17,6 +17,16 @@ return {
             hidden = true,
             ignored = true,
             exclude = { "__pycache__", "*.pyc", "*.pyi", "*.pyo" },
+            -- Pin the explorer root so DirChanged events (e.g. from project.nvim)
+            -- don't change the explorer's scope when opening files in subdirectories
+            on_show = function(picker)
+              if picker.list and picker.list.win and picker.list.win.augroup then
+                pcall(vim.api.nvim_clear_autocmds, {
+                  group = picker.list.win.augroup,
+                  event = "DirChanged",
+                })
+              end
+            end,
             -- Git integration
             git_status = true,
             git_status_open = true, -- show recursive git status for open dirs
