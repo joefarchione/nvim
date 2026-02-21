@@ -3,7 +3,7 @@ return {
   lazy = false,
   build = ":TSUpdate",
   opts = {
-    ensure_installed = { "python", "c", "lua", "vim", "vimdoc", "query", "rust", "julia", "cpp", "ocaml", "markdown", "markdown_inline", "yaml", "toml", "bash" },
+    ensure_installed = { "python", "c", "lua", "vim", "vimdoc", "query", "rust", "julia", "cpp", "ocaml", "fsharp", "markdown", "markdown_inline", "yaml", "toml", "bash" },
     highlight = { enable = true },
   },
 }

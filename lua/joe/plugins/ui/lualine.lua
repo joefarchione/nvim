@@ -81,6 +81,16 @@ return {
               cond = function() return navic.is_available() end,
               color = { fg = colors.nord9, bg = colors.nord0 },
             },
+            {
+              function()
+                local sln = _G._fsharp_get_selected_solution and _G._fsharp_get_selected_solution()
+                if not sln then return "" end
+                return "󰆼 " .. vim.fn.fnamemodify(sln, ":t:r")
+              end,
+              cond = function() return vim.bo.filetype == "fsharp" end,
+              color = { fg = colors.nord15, bg = colors.nord0 },
+              padding = { left = 2, right = 2 },
+            },
           },
           lualine_x = { "lsp_status", "fileformat", "filetype" },
           lualine_y = { "progress", "location" },
