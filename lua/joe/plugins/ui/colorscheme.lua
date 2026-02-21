@@ -1,16 +1,14 @@
 return {
   {
-    "AlexvZyl/nordic.nvim",
+    "shaunsingh/nord.nvim",
     lazy = false,
     priority = 1000,
-    enabled = true,
     config = function()
-      local nordic = require "nordic"
-      nordic.load {
-        cursorline = {
-          theme = "light",
-        },
-      }
+      vim.g.nord_contrast = true
+      vim.g.nord_borders = true
+      vim.g.nord_disable_background = false
+      vim.g.nord_italic = false
+      require("nord").set()
     end,
   },
 }
