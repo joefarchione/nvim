@@ -13,6 +13,7 @@ return {
         ["markdown"] = { "markdownlint", "codespell" },
         ["python"] = { "flake8" },
         ["sql"] = { "sqlfluff" },
+        ["cpp"] = { "cpplint" },
       }
 
       vim.api.nvim_create_autocmd({ "BufWritePost", "BufEnter" }, {
@@ -45,6 +46,7 @@ return {
         "markdownlint",
         "codespell",
         "sqlfluff",
+        "cpplint",
       },
     },
   },

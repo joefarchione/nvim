@@ -9,6 +9,9 @@ return {
       markdown = { "prettier" },
       json = { "prettier" },
       yaml = { "prettier" },
+      rust = { "rustfmt" },
+      cpp = { "clang-format" },
+      julia = { "JuliaFormatter" },
     },
 
     default_format_opts = {
