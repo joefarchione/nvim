@@ -72,10 +72,10 @@ vim.api.nvim_create_autocmd("LspAttach", {
     wk.add {
       buffer = bufnr,
       { "gD", vim.lsp.buf.declaration, desc = "Go to declaration" },
-      { "gd", vim.lsp.buf.definition, desc = "Go to definition" },
+      { "gd", function() Snacks.picker.lsp_definitions() end, desc = "Go to definition" },
       { "K", vim.lsp.buf.hover, desc = "Hover documentation" },
-      { "gi", vim.lsp.buf.implementation, desc = "Go to implementation" },
-      { "gr", vim.lsp.buf.references, desc = "Go to references" },
+      { "gi", function() Snacks.picker.lsp_implementations() end, desc = "Go to implementation" },
+      { "gr", function() Snacks.picker.lsp_references() end, desc = "Go to references" },
       { "<leader>ls", vim.lsp.buf.signature_help, desc = "Signature help" },
       { "<leader>lwa", vim.lsp.buf.add_workspace_folder, desc = "Add workspace folder" },
       { "<leader>lwr", vim.lsp.buf.remove_workspace_folder, desc = "Remove workspace folder" },
