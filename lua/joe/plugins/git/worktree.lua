@@ -5,12 +5,12 @@ return {
   end,
   keys = {
     {
-      "<leader>Gwl",
-      "<cmd>lua require('git-worktree').get_worktree_tracker()._on_tree_change('SWITCH', {})<cr>", -- This is internal, let's use the CLI for now or standard
+      "<leader>gwl",
+      "<cmd>lua require('git-worktree').get_worktree_tracker()._on_tree_change('SWITCH', {})<cr>",
       desc = "List worktrees (CLI)",
     },
     {
-      "<leader>Gwa",
+      "<leader>gwa",
       function()
         local name = vim.fn.input "Worktree name: "
         local branch = vim.fn.input "Branch name: "
