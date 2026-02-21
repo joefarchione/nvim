@@ -1,10 +1,28 @@
-local colors = require "nordic.colors"
--- Custom theme to control tabline background
--- Override the 'c' section (middle/fill area) for all modes
-local custom_theme = require "lualine.themes.nordic"
-local tabline_bg = { bg = colors.bg }
+-- Nord color palette
+local colors = {
+  nord0 = "#2e3440",
+  nord1 = "#3b4252",
+  nord2 = "#434c5e",
+  nord3 = "#4c566a",
+  nord4 = "#d8dee9",
+  nord5 = "#e5e9f0",
+  nord6 = "#eceff4",
+  nord7 = "#8fbcbb",
+  nord8 = "#88c0d0",
+  nord9 = "#81a1c1",
+  nord10 = "#5e81ac",
+  nord11 = "#bf616a",
+  nord12 = "#d08770",
+  nord13 = "#ebcb8b",
+  nord14 = "#a3be8c",
+  nord15 = "#b48ead",
+}
+
+-- Use standard Nord lualine theme
+local custom_theme = require "lualine.themes.nord"
+-- Ensure the middle section background matches nord0
 for _, mode in ipairs { "normal", "insert", "visual", "replace", "command", "inactive" } do
-  if custom_theme[mode] then custom_theme[mode].c = tabline_bg end
+  if custom_theme[mode] then custom_theme[mode].c = { bg = colors.nord0, fg = colors.nord4 } end
 end
 
 return {
@@ -13,8 +31,8 @@ return {
     config = function()
       local navic = require "nvim-navic"
 
-      local icon_hl = { fg = colors.fg }
-      local text_hl = { fg = colors.fg }
+      local icon_hl = { fg = colors.nord8 }
+      local text_hl = { fg = colors.nord4 }
 
       require("lualine").setup {
         options = {
@@ -25,7 +43,6 @@ return {
           ignore_focus = {},
           always_divide_middle = true,
           globalstatus = true,
-          draw_empty = true,
           refresh = {
             statusline = 1000,
             tabline = 1000,
@@ -62,7 +79,7 @@ return {
             {
               function() return navic.get_location() end,
               cond = function() return navic.is_available() end,
-              color = { fg = colors.blue0, bg = colors.bg },
+              color = { fg = colors.nord9, bg = colors.nord0 },
             },
           },
           lualine_x = { "lsp_status", "fileformat", "filetype" },
@@ -72,10 +89,10 @@ return {
         inactive_sections = {},
         sections = {},
         winbar = {
-          lualine_a = { { "filename", path = 1, color = { bg = colors.bg, fg = colors.magenta.base } } },
+          lualine_a = { { "filename", path = 1, color = { bg = colors.nord0, fg = colors.nord15 } } },
         },
         inactive_winbar = {
-          lualine_a = { { "filename", path = 1, color = { bg = colors.bg, fg = colors.gray3 } } },
+          lualine_a = { { "filename", path = 1, color = { bg = colors.nord0, fg = colors.nord3 } } },
         },
         extensions = {},
       }
