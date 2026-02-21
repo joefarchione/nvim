@@ -47,6 +47,17 @@ wk.add {
   { "<leader>S", group = "Sessions" },
   { "<leader>t", group = "Testing" },
   { "<leader>u", group = "Toggle Utils" },
+  {
+    "<leader>uh",
+    function() vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled()) end,
+    desc = "Toggle Inlay Hints",
+  },
+  {
+    "<C-i>",
+    function() vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled()) end,
+    desc = "Quick Toggle Inlay Hints",
+    mode = { "n", "i" },
+  },
   { "<leader>v", group = "VirtualEnv" },
   { "<leader>x", group = "Diagnostics" },
 }

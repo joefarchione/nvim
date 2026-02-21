@@ -32,6 +32,7 @@ return {
         "clangd",
         "ocamllsp",
         "julials",
+        "fsautocomplete",
         -- Formatters (conform.nvim)
         "stylua",
         "isort",
@@ -62,15 +63,47 @@ return {
     },
   },
   {
+    "ray-x/lsp_signature.nvim",
+    event = "VeryLazy",
+    opts = {
+      bind = true,
+      handler_opts = {
+        border = "rounded",
+      },
+      hint_enable = true,
+      hint_prefix = "󱄑 ",
+      toggle_key = "<C-k>", -- toggle signature on and off in insert mode
+    },
+    config = function(_, opts) require("lsp_signature").setup(opts) end,
+  },
+  {
     "neovim/nvim-lspconfig",
-    dependencies = { "mason-org/mason-lspconfig.nvim" },
+    dependencies = { "mason-org/mason-lspconfig.nvim", "ray-x/lsp_signature.nvim" },
     config = function()
       -- Enable LSP servers
       local lspconfig = require "lspconfig"
-      local servers = { "lua_ls", "pyright", "yamlls", "marksman", "powershell_es", "taplo", "rust_analyzer", "clangd", "ocamllsp", "julials" }
+      local servers = { "lua_ls", "pyright", "yamlls", "marksman", "powershell_es", "taplo", "rust_analyzer", "clangd", "ocamllsp", "julials", "fsautocomplete" }
+
+      local capabilities = require("blink.cmp").get_lsp_capabilities()
 
       for _, server in ipairs(servers) do
-        lspconfig[server].setup {}
+        lspconfig[server].setup {
+          capabilities = capabilities,
+          settings = (server == "lua_ls") and {
+            Lua = {
+              hint = { enable = true },
+            },
+          } or nil,
+          on_attach = function(client, bufnr)
+            if client.supports_method "textDocument/inlayHint" then
+              vim.lsp.inlay_hint.enable(false, { bufnr = bufnr })
+            end
+            require("lsp_signature").on_attach({
+              bind = true,
+              handler_opts = { border = "rounded" },
+            }, bufnr)
+          end,
+        }
       end
     end,
   },
