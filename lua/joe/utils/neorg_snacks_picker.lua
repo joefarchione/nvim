@@ -2,6 +2,7 @@ local M = {}
 
 local neorg = require "neorg.core"
 
+
 M.get_current_workspace = function()
   local dirman = neorg.modules.get_module "core.dirman"
   if dirman then
@@ -11,6 +12,11 @@ M.get_current_workspace = function()
   end
   return nil
 end
+
+M.get_project_root_directory = function()
+  return vim.fn.finddir(".git", ".;") or M.get_current_workspace()
+end
+
 -- Helper function to create daily note with link to previous day
 M.create_daily_with_prev_link = function()
   local today = os.date "%Y-%m-%d"
