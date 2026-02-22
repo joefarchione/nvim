@@ -30,12 +30,12 @@ return {
         "taplo",
         "rust_analyzer",
         "clangd",
-        "ocamllsp",
+        -- "ocamllsp", -- install with opam
         "julials",
         "fsautocomplete",
+        "bufls",
         -- Formatters (conform.nvim)
         "stylua",
-        "isort",
         "black",
         "prettier",
         -- Linters (nvim-lint)
@@ -80,14 +80,26 @@ return {
     "neovim/nvim-lspconfig",
     dependencies = { "mason-org/mason-lspconfig.nvim", "ray-x/lsp_signature.nvim" },
     config = function()
-      local servers = { "lua_ls", "pyright", "yamlls", "marksman", "powershell_es", "taplo", "rust_analyzer", "clangd", "ocamllsp", "julials", "fsautocomplete" }
+      local servers = {
+        "lua_ls",
+        "pyright",
+        "yamlls",
+        "marksman",
+        "powershell_es",
+        "taplo",
+        "rust_analyzer",
+        "clangd",
+        -- "ocamllsp", -- install with opam
+        "julials",
+        "fsautocomplete",
+        "bufls",
+      }
       local capabilities = require("blink.cmp").get_lsp_capabilities()
 
       -- Global diagnostic configuration
       vim.diagnostic.config {
         float = { border = "rounded" },
       }
-
       for _, server_name in ipairs(servers) do
         local config = require("lspconfig.configs")[server_name]
         if config then
@@ -97,25 +109,25 @@ return {
             filetypes = config.default_config.filetypes,
             root_markers = config.default_config.root_dir,
             capabilities = capabilities,
-                      settings = (server_name == "lua_ls") and {
-                        Lua = {
-                          hint = { enable = true },
-                        },
-                      } or (server_name == "fsautocomplete") and {
-                        FSharp = {
-                          keywordsAutocomplete = true,
-                          externalAutocomplete = true,
-                          LSPv2 = true,
-                          UnusedOpens = true,
-                          SimplifyNames = true,
-                          UnusedDeclarations = true,
-                          UnionCaseStubGeneration = true,
-                          InterfaceStubGeneration = true,
-                          AbstractClassStubGeneration = true,
-                          RecordStubGeneration = true,
-                        },
-                      } or nil,
-            
+            settings = (server_name == "lua_ls") and {
+              Lua = {
+                hint = { enable = true },
+              },
+            } or (server_name == "fsautocomplete") and {
+              FSharp = {
+                keywordsAutocomplete = true,
+                externalAutocomplete = true,
+                LSPv2 = true,
+                UnusedOpens = true,
+                SimplifyNames = true,
+                UnusedDeclarations = true,
+                UnionCaseStubGeneration = true,
+                InterfaceStubGeneration = true,
+                AbstractClassStubGeneration = true,
+                RecordStubGeneration = true,
+              },
+            } or nil,
+
             on_attach = function(client, bufnr)
               -- Disable inlay hints by default
               if client.supports_method "textDocument/inlayHint" then
