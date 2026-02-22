@@ -34,6 +34,7 @@ return {
         "julials",
         "fsautocomplete",
         "bufls",
+        "contextive",
         -- Formatters (conform.nvim)
         "stylua",
         "black",
@@ -45,6 +46,7 @@ return {
         "markdownlint",
         "codespell",
         "sqlfluff",
+        "contextive",
       },
       auto_update = true,
       run_on_start = true,
@@ -93,6 +95,7 @@ return {
         "julials",
         "fsautocomplete",
         "bufls",
+        "contextive",
       }
       local capabilities = require("blink.cmp").get_lsp_capabilities()
 
