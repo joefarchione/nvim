@@ -33,9 +33,10 @@ wk.add {
   { "<leader>gh", group = "Git hunk" },
   { "<leader>gw", group = "Git worktree" },
   { "<leader>h", group = "Harpoon" },
+  { "<leader>j", group = "Jupyter" },
+  { "<leader>k", group = "CMake" },
   { "<leader>l", group = "Lsp" },
   { "<leader>lw", group = "Lsp Workspace" },
-  { "<leader>j", group = "Jupyter" },
   { "<leader>m", group = "Mason" },
   { "<leader>P", group = "Plugins" },
   { "<leader>Pc", function() lazy.check() end, desc = "Check updates" },
@@ -48,18 +49,6 @@ wk.add {
   { "<leader>S", group = "Sessions" },
   { "<leader>t", group = "Testing" },
   { "<leader>u", group = "Toggle Utils" },
-  {
-    "<leader>uh",
-    function() vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled()) end,
-    desc = "Toggle Inlay Hints",
-  },
-  {
-    "<C-i>",
-    function() vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled()) end,
-    desc = "Quick Toggle Inlay Hints",
-    mode = { "n", "i" },
-  },
-  { "<leader>v", group = "VirtualEnv" },
   { "<leader>x", group = "Diagnostics" },
 }
 
@@ -89,6 +78,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
       { "<leader>ln", vim.lsp.buf.rename, desc = "Rename symbol" },
       { "<leader>la", vim.lsp.buf.code_action, desc = "Code action", mode = { "n", "v" } },
       { "<leader>lf", function() vim.lsp.buf.format { async = true } end, desc = "Format buffer" },
+      { "<leader>lv", "<cmd>VenvSelect<cr>", desc = "Select VirtualEnv", ft = "python" },
     }
   end,
 })

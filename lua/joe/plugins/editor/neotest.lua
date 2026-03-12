@@ -5,6 +5,7 @@ return {
     "nvim-lua/plenary.nvim",
     "nvim-treesitter/nvim-treesitter",
     "nvim-neotest/neotest-python",
+    "Issafalcon/neotest-dotnet",
   },
   keys = {
     { "<leader>t", group = "Test" },
@@ -72,6 +73,12 @@ return {
           dap = { justMyCode = false },
           runner = "pytest",
           python = get_python_path,
+        },
+        require "neotest-dotnet" {
+          dap = {
+            args = { justMyCode = false },
+          },
+          discovery_root = "solution",
         },
       },
       status = { virtual_text = true },

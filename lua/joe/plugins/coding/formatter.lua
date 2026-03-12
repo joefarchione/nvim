@@ -6,6 +6,7 @@ return {
     formatters_by_ft = {
       lua = { "stylua" },
       python = { "isort", "black" }, -- isort runs first, then black
+      fsharp = { "fantomas" },
       markdown = { "prettier" },
       json = { "prettier" },
       yaml = { "prettier" },

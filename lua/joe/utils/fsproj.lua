@@ -263,6 +263,180 @@ function M.move_fs_file(from)
   end)
 end
 
+--- Add a <Compile Include="rel_path" /> entry to fsproj
+--- Inserts after the last existing <Compile> entry, or before </ItemGroup>
+---@param fsproj string path to .fsproj
+---@param rel_path string relative path (backslash-separated)
+---@return boolean ok
+function M.add_compile(fsproj, rel_path)
+  local content = read_fsproj(fsproj)
+  if not content then return false end
+
+  -- Check if entry already exists
+  local escaped = pattern_escape(rel_path)
+  if content:match("<Compile%s+Include=\"" .. escaped .. "\"") then
+    return true -- already present
+  end
+
+  local new_entry = '    <Compile Include="' .. rel_path .. '" />\n'
+
+  -- Try to insert after the last <Compile> entry
+  local last_compile_pos = nil
+  local search_start = 1
+  while true do
+    local s, e = content:find("<Compile%s+Include=\"[^\"]*\"%s*/>", search_start)
+    if not s then
+      s, e = content:find("<Compile%s+Include=\"[^\"]*\"%s*>%s*</Compile>", search_start)
+    end
+    if not s then break end
+    last_compile_pos = e
+    search_start = e + 1
+  end
+
+  local new_content
+  if last_compile_pos then
+    -- Find end of the line after last compile entry
+    local eol = content:find("\n", last_compile_pos)
+    if eol then
+      new_content = content:sub(1, eol) .. new_entry .. content:sub(eol + 1)
+    else
+      new_content = content .. "\n" .. new_entry
+    end
+  else
+    -- No compile entries yet; insert before first </ItemGroup> or before </Project>
+    local insert_point = content:find "</ItemGroup>" or content:find "</Project>"
+    if insert_point then
+      new_content = content:sub(1, insert_point - 1) .. new_entry .. content:sub(insert_point)
+    else
+      return false
+    end
+  end
+
+  return write_fsproj(fsproj, new_content)
+end
+
+--- Get all <Compile Include="..."> entries in order from fsproj
+---@param fsproj string path to .fsproj
+---@return string[] entries list of relative paths
+function M.get_compile_order(fsproj)
+  local content = read_fsproj(fsproj)
+  if not content then return {} end
+
+  local entries = {}
+  for path in content:gmatch '<Compile%s+Include="([^"]*)"' do
+    table.insert(entries, path)
+  end
+  return entries
+end
+
+--- Swap two adjacent <Compile> entries in fsproj
+---@param fsproj string path to .fsproj
+---@param rel_path string relative path of the entry to move
+---@param direction "up"|"down"
+---@return boolean ok
+function M.move_compile(fsproj, rel_path, direction)
+  local content = read_fsproj(fsproj)
+  if not content then return false end
+
+  -- Collect all compile lines with their positions
+  local entries = {}
+  for line in content:gmatch "[^\n]*" do
+    local include = line:match '<Compile%s+Include="([^"]*)"'
+    if include then
+      table.insert(entries, { path = include, line = line })
+    end
+  end
+
+  -- Find our entry
+  local idx
+  for i, e in ipairs(entries) do
+    if e.path == rel_path then
+      idx = i
+      break
+    end
+  end
+
+  if not idx then return false end
+
+  local swap_idx = direction == "up" and idx - 1 or idx + 1
+  if swap_idx < 1 or swap_idx > #entries then return false end
+
+  -- Swap the two lines in content
+  local line_a = entries[idx].line
+  local line_b = entries[swap_idx].line
+  local escaped_a = pattern_escape(line_a)
+  local escaped_b = pattern_escape(line_b)
+
+  -- Use a placeholder to avoid double-replacement
+  local placeholder = "<!--__FSPROJ_SWAP_PLACEHOLDER__-->"
+  local new_content = content:gsub(escaped_a, placeholder, 1)
+  new_content = new_content:gsub(escaped_b, line_a, 1)
+  new_content = new_content:gsub(pattern_escape(placeholder), line_b, 1)
+
+  if new_content == content then return false end
+  return write_fsproj(fsproj, new_content)
+end
+
+--- Create a new F# file, add it to fsproj, and open it
+---@param fsproj_path string|nil optional fsproj path (auto-detected from cwd if nil)
+function M.create_fs_file(fsproj_path)
+  local fsproj = fsproj_path
+  if not fsproj then
+    fsproj = M.find_fsproj(vim.api.nvim_buf_get_name(0))
+    if not fsproj then
+      -- Try from cwd
+      local cwd = vim.uv.cwd()
+      local projs = vim.fn.globpath(cwd, "**/*.fsproj", false, true)
+      if #projs == 1 then
+        fsproj = projs[1]
+      elseif #projs > 1 then
+        vim.ui.select(projs, { prompt = "Select .fsproj:" }, function(choice)
+          if choice then M.create_fs_file(choice) end
+        end)
+        return
+      else
+        Snacks.notify("No .fsproj found", { level = "warn" })
+        return
+      end
+    end
+  end
+
+  local proj_dir = vim.fs.dirname(fsproj)
+  Snacks.input({ prompt = "New F# file (relative to project):", default = "" }, function(value)
+    if not value or value == "" then return end
+
+    -- Ensure .fs extension
+    if not value:match "%.fsx?$" then
+      value = value .. ".fs"
+    end
+
+    local filepath = proj_dir .. "/" .. value
+    filepath = vim.fn.fnamemodify(filepath, ":p")
+
+    -- Create parent directories
+    local dir = vim.fs.dirname(filepath)
+    vim.fn.mkdir(dir, "p")
+
+    -- Create the file with a module declaration
+    local module_name = vim.fn.fnamemodify(filepath, ":t:r")
+    local f = io.open(filepath, "w")
+    if not f then
+      Snacks.notify("Failed to create " .. filepath, { level = "error" })
+      return
+    end
+    f:write("module " .. module_name .. "\n")
+    f:close()
+
+    -- Add to fsproj
+    local rel = M.relative_path(fsproj, filepath)
+    M.add_compile(fsproj, rel)
+
+    -- Open the file
+    vim.cmd.edit(filepath)
+    Snacks.notify("Created " .. value .. " (fsproj updated)")
+  end)
+end
+
 --- Remove compile entry for a path (used by explorer integration)
 --- Returns true if an entry was removed
 ---@param filepath string

@@ -41,7 +41,7 @@ return {
       -- .NET Debugger (netcoredbg)
       dap.adapters.coreclr = {
         type = "executable",
-        command = vim.fn.has "win32" == 1 and "netcoredbg.exe" or "netcoredbg",
+        command = "netcoredbg",
         args = { "--interpreter=vscode" },
       }
 
@@ -120,9 +120,7 @@ return {
     },
     config = function()
       -- Get debugpy path from mason
-      local debugpy_path = vim.fn.stdpath "data" .. "/mason/packages/debugpy/venv/Scripts/python"
-      -- Use forward slashes and .exe for Windows
-      if vim.fn.has "win32" == 1 then debugpy_path = debugpy_path:gsub("/", "\\") .. ".exe" end
+      local debugpy_path = vim.fn.stdpath "data" .. "/mason/packages/debugpy/venv/bin/python"
       require("dap-python").setup(debugpy_path)
       require("dap-python").test_runner = "pytest"
     end,

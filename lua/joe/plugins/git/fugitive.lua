@@ -9,7 +9,7 @@ return {
       { "<leader>gf", "<cmd>Git pull<cr>", desc = "Git pull" },
       { "<leader>gl", "<cmd>Git log --oneline<cr>", desc = "Git log" },
       { "<leader>gd", "<cmd>DiffviewOpen<cr>", desc = "Diff view (diffview)" },
-      { "<leader>gh", "<cmd>DiffviewFileHistory %<cr>", desc = "File history (diffview)" },
+      { "<leader>gF", "<cmd>DiffviewFileHistory %<cr>", desc = "File history (diffview)" },
       { "<leader>gH", "<cmd>DiffviewFileHistory<cr>", desc = "Branch history (diffview)" },
       { "<leader>gg", function() Snacks.lazygit() end, desc = "Lazygit" },
     },

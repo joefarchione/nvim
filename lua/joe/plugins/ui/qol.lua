@@ -89,15 +89,15 @@ return {
       function() Snacks.scratch() end,
       desc = "Toggle Scratch Buffer",
     },
-    -- scratch
+    -- scratch select (under toggle utils to avoid <leader>S sessions conflict)
     {
-      "<leader>S",
+      "<leader>uS",
       function() Snacks.scratch.select() end,
       desc = "Select Scratch Buffer",
     },
-    -- Rename
+    -- Rename (under File group)
     {
-      "<leader>rn",
+      "<leader>fR",
       function() Snacks.rename.rename_file() end,
       desc = "Rename File",
     },

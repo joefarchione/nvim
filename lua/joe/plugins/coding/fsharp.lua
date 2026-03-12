@@ -22,6 +22,12 @@ end
 -- Expose getter for other modules
 _G._fsharp_get_selected_solution = get_selected_solution
 
+--- Helper to get the nearest fsproj for the current buffer
+local function current_fsproj()
+  local fsproj_util = require "joe.utils.fsproj"
+  return fsproj_util.find_fsproj(vim.api.nvim_buf_get_name(0))
+end
+
 return {
   "ionide/Ionide-vim",
   ft = "fsharp",
@@ -35,6 +41,8 @@ return {
   end,
   keys = {
     { "<leader>n", group = ".NET" },
+
+    -- Build & Run
     {
       "<leader>nb",
       function() Snacks.terminal("dotnet build", { win = { style = "terminal" } }) end,
@@ -46,9 +54,9 @@ return {
       desc = "Run",
     },
     {
-      "<leader>nt",
-      function() Snacks.terminal("dotnet test", { win = { style = "terminal" } }) end,
-      desc = "Test (CLI)",
+      "<leader>nw",
+      function() Snacks.terminal("dotnet watch run", { win = { style = "terminal" } }) end,
+      desc = "Watch run",
     },
     {
       "<leader>nc",
@@ -66,47 +74,8 @@ return {
       desc = "F# Interactive",
       ft = "fsharp",
     },
-    {
-      "<leader>nw",
-      function() Snacks.terminal("dotnet watch run", { win = { style = "terminal" } }) end,
-      desc = "Watch run",
-    },
-    {
-      "<leader>np",
-      function()
-        local root = vim.fs.root(0, function(name) return name:match "%.fsproj$" end) or vim.uv.cwd()
-        local projs = vim.fn.globpath(root, "*.fsproj", false, true)
-        if #projs == 1 then
-          vim.cmd.edit(projs[1])
-        elseif #projs > 1 then
-          vim.ui.select(projs, { prompt = "Select .fsproj:" }, function(choice)
-            if choice then vim.cmd.edit(choice) end
-          end)
-        else
-          Snacks.notify("No .fsproj found", { level = "warn" })
-        end
-      end,
-      desc = "Open .fsproj",
-    },
-    { "<leader>nf", group = ".NET File" },
-    {
-      "<leader>nfd",
-      function() require("joe.utils.fsproj").delete_fs_file(vim.api.nvim_buf_get_name(0)) end,
-      desc = "Delete F# file",
-      ft = "fsharp",
-    },
-    {
-      "<leader>nfr",
-      function() require("joe.utils.fsproj").rename_fs_file(vim.api.nvim_buf_get_name(0)) end,
-      desc = "Rename F# file",
-      ft = "fsharp",
-    },
-    {
-      "<leader>nfm",
-      function() require("joe.utils.fsproj").move_fs_file(vim.api.nvim_buf_get_name(0)) end,
-      desc = "Move F# file",
-      ft = "fsharp",
-    },
+
+    -- Solution
     {
       "<leader>ns",
       function()
@@ -130,7 +99,6 @@ return {
                 },
               },
             })
-            -- Restart to pick up the new solution cleanly
             vim.schedule(function()
               vim.cmd "LspRestart fsautocomplete"
             end)
@@ -138,6 +106,182 @@ return {
         end)
       end,
       desc = "Switch solution",
+    },
+    {
+      "<leader>np",
+      function()
+        local root = vim.fs.root(0, function(name) return name:match "%.fsproj$" end) or vim.uv.cwd()
+        local projs = vim.fn.globpath(root, "*.fsproj", false, true)
+        if #projs == 1 then
+          vim.cmd.edit(projs[1])
+        elseif #projs > 1 then
+          vim.ui.select(projs, { prompt = "Select .fsproj:" }, function(choice)
+            if choice then vim.cmd.edit(choice) end
+          end)
+        else
+          Snacks.notify("No .fsproj found", { level = "warn" })
+        end
+      end,
+      desc = "Open .fsproj",
+    },
+
+    -- File management (F# specific)
+    { "<leader>nf", group = ".NET File" },
+    {
+      "<leader>nfa",
+      function() require("joe.utils.fsproj").create_fs_file() end,
+      desc = "Add new F# file",
+      ft = "fsharp",
+    },
+    {
+      "<leader>nfd",
+      function() require("joe.utils.fsproj").delete_fs_file(vim.api.nvim_buf_get_name(0)) end,
+      desc = "Delete F# file",
+      ft = "fsharp",
+    },
+    {
+      "<leader>nfr",
+      function() require("joe.utils.fsproj").rename_fs_file(vim.api.nvim_buf_get_name(0)) end,
+      desc = "Rename F# file",
+      ft = "fsharp",
+    },
+    {
+      "<leader>nfm",
+      function() require("joe.utils.fsproj").move_fs_file(vim.api.nvim_buf_get_name(0)) end,
+      desc = "Move F# file",
+      ft = "fsharp",
+    },
+
+    -- Compile order (F# file order matters!)
+    { "<leader>no", group = "Compile order" },
+    {
+      "<leader>nok",
+      function()
+        local fsproj_util = require "joe.utils.fsproj"
+        local filepath = vim.api.nvim_buf_get_name(0)
+        local fsproj = fsproj_util.find_fsproj(filepath)
+        if not fsproj then
+          Snacks.notify("No .fsproj found", { level = "warn" })
+          return
+        end
+        local rel = fsproj_util.relative_path(fsproj, filepath)
+        if fsproj_util.move_compile(fsproj, rel, "up") then
+          Snacks.notify("Moved up in compile order")
+        else
+          Snacks.notify("Already at top or not found", { level = "warn" })
+        end
+      end,
+      desc = "Move file up",
+      ft = "fsharp",
+    },
+    {
+      "<leader>noj",
+      function()
+        local fsproj_util = require "joe.utils.fsproj"
+        local filepath = vim.api.nvim_buf_get_name(0)
+        local fsproj = fsproj_util.find_fsproj(filepath)
+        if not fsproj then
+          Snacks.notify("No .fsproj found", { level = "warn" })
+          return
+        end
+        local rel = fsproj_util.relative_path(fsproj, filepath)
+        if fsproj_util.move_compile(fsproj, rel, "down") then
+          Snacks.notify("Moved down in compile order")
+        else
+          Snacks.notify("Already at bottom or not found", { level = "warn" })
+        end
+      end,
+      desc = "Move file down",
+      ft = "fsharp",
+    },
+    {
+      "<leader>nol",
+      function()
+        local fsproj_util = require "joe.utils.fsproj"
+        local fsproj = current_fsproj()
+        if not fsproj then
+          Snacks.notify("No .fsproj found", { level = "warn" })
+          return
+        end
+        local entries = fsproj_util.get_compile_order(fsproj)
+        if #entries == 0 then
+          Snacks.notify("No compile entries found", { level = "warn" })
+          return
+        end
+
+        -- Highlight current file in the list
+        local current = vim.api.nvim_buf_get_name(0)
+        local current_rel = fsproj_util.relative_path(fsproj, current)
+        local lines = {}
+        for i, entry in ipairs(entries) do
+          local marker = entry == current_rel and " <--" or ""
+          table.insert(lines, string.format("%2d. %s%s", i, entry:gsub("\\", "/"), marker))
+        end
+        Snacks.notify(
+          "Compile order (" .. vim.fn.fnamemodify(fsproj, ":t") .. "):\n" .. table.concat(lines, "\n"),
+          { title = "F# Compile Order" }
+        )
+      end,
+      desc = "List compile order",
+      ft = "fsharp",
+    },
+
+    -- NuGet package management
+    { "<leader>nP", group = "NuGet" },
+    {
+      "<leader>nPa",
+      function()
+        Snacks.input({ prompt = "Package name:" }, function(pkg)
+          if not pkg or pkg == "" then return end
+          Snacks.input({ prompt = "Version (blank for latest):", default = "" }, function(ver)
+            local cmd = "dotnet add package " .. pkg
+            if ver and ver ~= "" then cmd = cmd .. " --version " .. ver end
+            Snacks.terminal(cmd, { win = { style = "terminal" } })
+          end)
+        end)
+      end,
+      desc = "Add package",
+    },
+    {
+      "<leader>nPr",
+      function()
+        Snacks.input({ prompt = "Package to remove:" }, function(pkg)
+          if not pkg or pkg == "" then return end
+          Snacks.terminal("dotnet remove package " .. pkg, { win = { style = "terminal" } })
+        end)
+      end,
+      desc = "Remove package",
+    },
+    {
+      "<leader>nPl",
+      function() Snacks.terminal("dotnet list package", { win = { style = "terminal" } }) end,
+      desc = "List packages",
+    },
+    {
+      "<leader>nPo",
+      function() Snacks.terminal("dotnet list package --outdated", { win = { style = "terminal" } }) end,
+      desc = "List outdated packages",
+    },
+
+    -- Scaffolding
+    {
+      "<leader>nn",
+      function()
+        Snacks.terminal("dotnet new list", { win = { style = "terminal" } })
+      end,
+      desc = "dotnet new (list templates)",
+    },
+
+    -- Test via CLI (complement to neotest)
+    {
+      "<leader>nT",
+      function() Snacks.terminal("dotnet test", { win = { style = "terminal" } }) end,
+      desc = "Test (dotnet CLI)",
+    },
+    {
+      "<leader>nTv",
+      function() Snacks.terminal("dotnet test --verbosity normal", { win = { style = "terminal" } }) end,
+      desc = "Test (verbose)",
     },
   },
 }

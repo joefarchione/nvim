@@ -21,6 +21,8 @@ return {
       "toml",
       "bash",
       "proto",
+      "cuda",
+      "cmake",
     },
     highlight = { enable = true },
   },
