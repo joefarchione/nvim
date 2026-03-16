@@ -33,7 +33,7 @@ return {
         -- "ocamllsp", -- install with opam
         "julials",
         "fsautocomplete",
-        "bufls",
+        -- "buf-language-server",
         "contextive",
         -- Formatters (conform.nvim)
         "stylua",
@@ -94,7 +94,7 @@ return {
         -- "ocamllsp", -- install with opam
         "julials",
         "fsautocomplete",
-        "bufls",
+        -- "buf-language-server",
         "contextive",
       }
       local capabilities = require("blink.cmp").get_lsp_capabilities()
@@ -103,33 +103,25 @@ return {
       vim.diagnostic.config {
         float = { border = "rounded" },
       }
-      for _, server_name in ipairs(servers) do
-        local config = require("lspconfig.configs")[server_name]
-        if config then
-          -- Use the new vim.lsp.config interface (Neovim 0.11+)
-          vim.lsp.config(server_name, {
-            cmd = config.default_config.cmd,
-            filetypes = config.default_config.filetypes,
-            root_markers = config.default_config.root_dir,
-            capabilities = capabilities,
 
-            on_attach = function(client, bufnr)
-              -- Disable inlay hints by default
-              if client.supports_method "textDocument/inlayHint" then
-                vim.lsp.inlay_hint.enable(false, { bufnr = bufnr })
-              end
-              -- Attach signature help
-              require("lsp_signature").on_attach({
-                bind = true,
-                handler_opts = { border = "rounded" },
-              }, bufnr)
-            end,
-          })
+      -- Apply shared capabilities and on_attach to all servers
+      -- Server-specific settings come from after/lsp/<server>.lua (Neovim 0.11+)
+      vim.lsp.config("*", {
+        capabilities = capabilities,
+        on_attach = function(client, bufnr)
+          if client.supports_method "textDocument/inlayHint" then
+            vim.lsp.inlay_hint.enable(false, { bufnr = bufnr })
+          end
+          if client.supports_method "textDocument/signatureHelp" then
+            require("lsp_signature").on_attach({
+              bind = true,
+              handler_opts = { border = "rounded" },
+            }, bufnr)
+          end
+        end,
+      })
 
-          -- Enable the server
-          vim.lsp.enable(server_name)
-        end
-      end
+      vim.lsp.enable(servers)
     end,
   },
 }

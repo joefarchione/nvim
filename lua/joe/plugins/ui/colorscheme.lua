@@ -74,7 +74,12 @@ return {
           ["Comment"] = { fg = "#616e88" },
           ["SnacksExplorerFile"] = { fg = colors.nord4 },
           ["SnacksExplorerDirectory"] = { fg = colors.nord8 },
-          ["SnacksExplorerIgnored"] = { fg = "#616e88" },
+          -- CodeLens
+          ["LspCodeLens"] = { fg = colors.nord9, italic = true },
+          ["LspCodeLensSeparator"] = { fg = colors.nord9 },
+
+          ["SnacksPickerPathIgnored"] = { fg = colors.nord4 },
+          ["SnacksPickerPathHidden"] = { fg = colors.nord4 },
           ["SnacksExplorerUntracked"] = { fg = colors.nord12 }, -- Orange for untracked!
         }
 

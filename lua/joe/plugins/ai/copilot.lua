@@ -44,7 +44,7 @@ return {
       hgcommit = false,
       svn = false,
       cvs = false,
-      ["."] = false,
+      ["."] = true,
     },
     nes = {
       enabled = true,
