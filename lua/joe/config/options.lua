@@ -23,10 +23,7 @@ local options = {
     expandtab = true, -- enable the use of space in tab
     fileencoding = "utf-8", -- file content encoding for the buffer
     fillchars = { eob = " " },
-    foldenable = true, -- enable fold for nvim-ufo
-    foldlevel = 99, -- set high foldlevel for nvim-ufo
-    foldlevelstart = 99, -- start with all code unfolded
-    foldcolumn = vim.fn.has "nvim-0.9" == 1 and "1" or nil, -- show foldcolumn in nvim 0.9
+    -- folding managed by nvim-ufo (lua/joe/plugins/coding/ufo.lua)
     history = 100, -- number of commands to remember in a history table
     ignorecase = true, -- case insensitive searching
     infercase = true, -- infer cases in keyword completion

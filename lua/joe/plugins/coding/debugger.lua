@@ -9,7 +9,7 @@ return {
         "jay-babu/mason-nvim-dap.nvim",
         dependencies = "mason.nvim",
         opts = {
-          ensure_installed = { "debugpy", "netcoredbg" },
+          ensure_installed = { "debugpy", "netcoredbg", "codelldb" },
           automatic_installation = true,
         },
       },
@@ -57,6 +57,42 @@ return {
           },
         }
       end
+
+      -- C/C++/Rust Debugger (codelldb via mason)
+      dap.adapters.codelldb = {
+        type = "server",
+        port = "${port}",
+        executable = {
+          command = vim.fn.stdpath "data" .. "/mason/bin/codelldb",
+          args = { "--port", "${port}" },
+        },
+      }
+
+      dap.configurations.cpp = {
+        {
+          name = "Launch",
+          type = "codelldb",
+          request = "launch",
+          program = function()
+            return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
+          end,
+          cwd = "${workspaceFolder}",
+          stopOnEntry = false,
+        },
+      }
+      dap.configurations.c = dap.configurations.cpp
+      dap.configurations.rust = {
+        {
+          name = "Launch",
+          type = "codelldb",
+          request = "launch",
+          program = function()
+            return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/target/debug/", "file")
+          end,
+          cwd = "${workspaceFolder}",
+          stopOnEntry = false,
+        },
+      }
 
       -- DAP UI setup
       ---@diagnostic disable-next-line: missing-fields

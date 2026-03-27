@@ -25,4 +25,9 @@ return {
     main = "ibl",
     opts = {},
   },
+  {
+    "echasnovski/mini.pairs",
+    event = "InsertEnter",
+    opts = {},
+  },
 }

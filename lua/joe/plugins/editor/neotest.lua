@@ -6,6 +6,7 @@ return {
     "nvim-treesitter/nvim-treesitter",
     "nvim-neotest/neotest-python",
     "Issafalcon/neotest-dotnet",
+    "rouge8/neotest-rust",
   },
   keys = {
     { "<leader>t", group = "Test" },
@@ -80,6 +81,7 @@ return {
           },
           discovery_root = "solution",
         },
+        require "neotest-rust",
       },
       status = { virtual_text = true },
       output = { open_on_run = true },
