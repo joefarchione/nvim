@@ -29,11 +29,11 @@ return {
             end,
             -- Git integration
             git_status = true,
-            git_status_open = true, -- show recursive git status for open dirs
+            git_status_open = false, -- recursive git status freezes large repos
             git_untracked = true,
             -- Diagnostics integration
             diagnostics = true,
-            diagnostics_open = true, -- show recursive diagnostics for open dirs
+            diagnostics_open = false, -- recursive diagnostics slow on expand
             -- Default floating layout for explorer
             layout = {
               preview = true,

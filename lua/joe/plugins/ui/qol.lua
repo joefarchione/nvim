@@ -2,7 +2,7 @@ return {
   "folke/snacks.nvim",
   opts = {
     scroll = {
-      enabled = true,
+      enabled = false,
       animate = {
         duration = { step = 10, total = 50 },
         easing = "linear",

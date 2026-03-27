@@ -31,7 +31,7 @@ return {
           -- Base
           ["Normal"] = { fg = colors.nord4, bg = colors.nord0 },
           ["NormalFloat"] = { fg = colors.nord4, bg = colors.nord1 },
-          ["NonText"] = { fg = colors.nord1 },
+          ["NonText"] = { fg = "#4c566a" },
 
           -- Parameters & Arguments (Orange + Italic)
           ["@parameter"] = { fg = colors.nord12, italic = true },
@@ -70,8 +70,8 @@ return {
 
           -- --- UI & Explorer (Snacks) Visibility Fixes ---
           -- Ignored/Untracked files (make them a visible gray, not matching background)
-          ["DiagnosticUnnecessary"] = { fg = "#616e88" }, -- Brighter than Nord3 for visibility
-          ["Comment"] = { fg = "#616e88" },
+          ["DiagnosticUnnecessary"] = { fg = "#7b88a1" },
+          ["Comment"] = { fg = "#7b88a1" },
           ["SnacksExplorerFile"] = { fg = colors.nord4 },
           ["SnacksExplorerDirectory"] = { fg = colors.nord8 },
           -- CodeLens
@@ -81,6 +81,8 @@ return {
           ["SnacksPickerPathIgnored"] = { fg = colors.nord4 },
           ["SnacksPickerPathHidden"] = { fg = colors.nord4 },
           ["SnacksExplorerUntracked"] = { fg = colors.nord12 }, -- Orange for untracked!
+          ["SnacksPickerGitStatusUntracked"] = { fg = colors.nord12 },
+          ["SnacksPickerGitStatusIgnored"] = { fg = "#7b88a1" },
         }
 
         for group, opts in pairs(groups) do

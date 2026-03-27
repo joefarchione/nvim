@@ -1,3 +1,9 @@
+-- Disable unused providers
+vim.g.loaded_python3_provider = 0
+vim.g.loaded_node_provider = 0
+vim.g.loaded_ruby_provider = 0
+vim.g.loaded_perl_provider = 0
+
 vim.opt.viewoptions:remove "curdir" -- disable saving current directory with views
 vim.opt.shortmess:append { s = true, I = true } -- disable startup message
 vim.opt.backspace:append { "nostop" } -- don't stop backspace at insert
@@ -8,6 +14,7 @@ end
 local options = {
   opt = {
     autoread = true, -- detect buffer changes and reload
+    updatetime = 250, -- faster CursorHold for git gutter, highlights, hover
     breakindent = true, -- wrap indent to match  line start
     clipboard = "unnamedplus", -- connection to the system clipboard
     completeopt = { "menu", "menuone", "noselect" }, -- Options for insert mode completion

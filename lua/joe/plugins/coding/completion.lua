@@ -142,11 +142,11 @@ return {
     keymap = {
       preset = "enter",
       ["<C-y>"] = { "select_and_accept" },
-      ["<C-Space>"] = {
+      ["<C-S-Space>"] = {
         function(cmp)
-          cmp.show() -- Explicitly shows the completion menu
+          cmp.show()
         end,
-        "fallback", -- Fallback to default Neovim behavior if blink can't handle it
+        "fallback",
       },
     },
   },
