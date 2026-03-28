@@ -8,8 +8,8 @@ return {
     vim.g.slime_no_mappings = 1
   end,
   keys = {
-    { "<leader>rc", "<Plug>SlimeMotionSend", desc = "Send motion" },
-    { "<leader>rc", "<Plug>SlimeRegionSend", mode = "x", desc = "Send selection" },
+    { "<leader>rs", "<Plug>SlimeMotionSend", desc = "Send motion" },
+    { "<leader>rs", "<Plug>SlimeRegionSend", mode = "x", desc = "Send selection" },
     { "<leader>rl", "<Plug>SlimeLineSend", desc = "Send line" },
     { "<leader>rp", "<Plug>SlimeParagraphSend", desc = "Send paragraph" },
     { "<leader>rC", "<Plug>SlimeConfig", desc = "Slime config" },

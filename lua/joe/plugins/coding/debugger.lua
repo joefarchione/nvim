@@ -144,10 +144,10 @@ return {
     ft = "python",
     dependencies = { "mfussenegger/nvim-dap" },
     keys = {
-      { "<leader>dPt", function() require("dap-python").test_method() end, desc = "Debug test method", ft = "python" },
-      { "<leader>dPc", function() require("dap-python").test_class() end, desc = "Debug test class", ft = "python" },
+      { "<leader>dpt", function() require("dap-python").test_method() end, desc = "Debug test method", ft = "python" },
+      { "<leader>dpc", function() require("dap-python").test_class() end, desc = "Debug test class", ft = "python" },
       {
-        "<leader>dPs",
+        "<leader>dps",
         function() require("dap-python").debug_selection() end,
         desc = "Debug selection",
         mode = "v",

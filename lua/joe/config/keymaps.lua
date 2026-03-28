@@ -26,7 +26,7 @@ local lazy = require "lazy"
 
 wk.add {
   { "<leader>d", group = "Debugger" },
-  { "<leader>Dc", group = "Devcontainer" },
+  { "<leader>vc", group = "Container" },
   { "<leader>e", group = "Explorer" },
   { "<leader>f", group = "File" },
   { "<leader>g", group = "Git" },
@@ -42,11 +42,11 @@ wk.add {
   { "<leader>Pc", function() lazy.check() end, desc = "Check updates" },
   { "<leader>Pi", function() lazy.install() end, desc = "Install" },
   { "<leader>Ps", function() lazy.home() end, desc = "Status" },
-  { "<leader>PS", function() lazy.sync() end, desc = "Sync" },
+  { "<leader>Ps", function() lazy.sync() end, desc = "Sync" },
   { "<leader>Pu", function() lazy.update() end, desc = "Update" },
   { "<leader>r", group = "REPL" },
   { "<leader>s", group = "Grep" },
-  { "<leader>S", group = "Sessions" },
+  { "<leader>q", group = "Sessions" },
   { "<leader>t", group = "Testing" },
   { "<leader>u", group = "Toggle Utils" },
   { "<leader>x", group = "Diagnostics" },

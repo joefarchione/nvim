@@ -6,9 +6,9 @@ return {
     -- add any custom options here
   },
   keys = {
-    { "<leader>Ss", function() require("persistence").load() end, desc = "Load cwd session" },
-    { "<leader>SS", function() require("persistence").select() end, desc = "Select session" },
-    { "<leader>Sl", function() require("persistence").load { last = true } end, desc = "Load last session" },
-    { "<leader>Sd", function() require("persistence").stop() end, desc = "Stop save on exit" },
+    { "<leader>qs", function() require("persistence").load() end, desc = "Load cwd session" },
+    { "<leader>qS", function() require("persistence").select() end, desc = "Select session" },
+    { "<leader>ql", function() require("persistence").load { last = true } end, desc = "Load last session" },
+    { "<leader>qd", function() require("persistence").stop() end, desc = "Stop save on exit" },
   },
 }
