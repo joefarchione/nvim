@@ -5,8 +5,8 @@ return {
     priority = 1000,
     config = function()
       -- 1. Pre-load settings
-      vim.g.nord_contrast = true
-      vim.g.nord_borders = true
+      vim.g.nord_contrast = false
+      vim.g.nord_borders = false
       vim.g.nord_disable_background = false
       vim.g.nord_italic = false
 
@@ -28,25 +28,27 @@ return {
 
         local hl = vim.api.nvim_set_hl
         local groups = {
-          -- Base
+          -- Base (flat: everything on nord0)
           ["Normal"] = { fg = colors.nord4, bg = colors.nord0 },
-          ["NormalFloat"] = { fg = colors.nord4, bg = colors.nord1 },
+          ["NormalFloat"] = { fg = colors.nord4, bg = colors.nord0 },
           ["NonText"] = { fg = "#4c566a" },
+          ["FloatBorder"] = { fg = "#4c566a", bg = colors.nord0 },
+          ["WinSeparator"] = { fg = colors.nord1, bg = colors.nord0 },
 
-          -- Parameters & Arguments (Orange + Italic)
-          ["@parameter"] = { fg = colors.nord12, italic = true },
-          ["@variable.parameter"] = { fg = colors.nord12, italic = true },
-          ["@lsp.type.parameter"] = { fg = colors.nord12, italic = true },
+          -- Parameters & Arguments (Orange, no italic)
+          ["@parameter"] = { fg = colors.nord12 },
+          ["@variable.parameter"] = { fg = colors.nord12 },
+          ["@lsp.type.parameter"] = { fg = colors.nord12 },
           ["LspSignatureActiveParameter"] = { fg = colors.nord12, underline = true },
 
-          -- Properties & Data Members (White)
+          -- Properties & Data Members
           ["@property"] = { fg = colors.nord4 },
           ["@field"] = { fg = colors.nord4 },
           ["@variable.member"] = { fg = colors.nord4 },
           ["@lsp.type.property"] = { fg = colors.nord4 },
           ["@lsp.type.variable.member"] = { fg = colors.nord4 },
 
-          -- Identifiers & Variables (Remap dark blues to white)
+          -- Identifiers & Variables
           ["@variable"] = { fg = colors.nord4 },
           ["@variable.builtin"] = { fg = colors.nord4 },
           ["@lsp.type.variable"] = { fg = colors.nord4 },
@@ -64,25 +66,28 @@ return {
           ["@string"] = { fg = colors.nord13 },
           ["@keyword.return"] = { fg = colors.nord11 },
 
-          -- Constants (Bright White)
-          ["@constant"] = { fg = colors.white },
-          ["@constant.builtin"] = { fg = colors.white },
+          -- Constants (same as variables for reduced color noise)
+          ["@constant"] = { fg = colors.nord4 },
+          ["@constant.builtin"] = { fg = colors.nord4 },
 
           -- --- UI & Explorer (Snacks) Visibility Fixes ---
-          -- Ignored/Untracked files (make them a visible gray, not matching background)
-          ["DiagnosticUnnecessary"] = { fg = "#7b88a1" },
-          ["Comment"] = { fg = "#7b88a1" },
+          ["DiagnosticUnnecessary"] = { fg = "#8892a8" },
+          ["Comment"] = { fg = "#8892a8" },
           ["SnacksExplorerFile"] = { fg = colors.nord4 },
           ["SnacksExplorerDirectory"] = { fg = colors.nord8 },
-          -- CodeLens
-          ["LspCodeLens"] = { fg = colors.nord9, italic = true },
+          -- CodeLens (no italic)
+          ["LspCodeLens"] = { fg = colors.nord9 },
           ["LspCodeLensSeparator"] = { fg = colors.nord9 },
 
           ["SnacksPickerPathIgnored"] = { fg = colors.nord4 },
           ["SnacksPickerPathHidden"] = { fg = colors.nord4 },
-          ["SnacksExplorerUntracked"] = { fg = colors.nord12 }, -- Orange for untracked!
+          ["SnacksExplorerUntracked"] = { fg = colors.nord12 },
           ["SnacksPickerGitStatusUntracked"] = { fg = colors.nord12 },
-          ["SnacksPickerGitStatusIgnored"] = { fg = "#7b88a1" },
+          ["SnacksPickerGitStatusIgnored"] = { fg = "#8892a8" },
+
+          -- Winbar (flat, no dead space)
+          ["WinBar"] = { fg = colors.nord4, bg = colors.nord0 },
+          ["WinBarNC"] = { fg = "#4c566a", bg = colors.nord0 },
         }
 
         for group, opts in pairs(groups) do

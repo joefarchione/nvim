@@ -18,11 +18,14 @@ local colors = {
   nord15 = "#b48ead",
 }
 
--- Use standard Nord lualine theme
+-- Flat Nord lualine theme: all sections on nord0
 local custom_theme = require "lualine.themes.nord"
--- Ensure the middle section background matches nord0
 for _, mode in ipairs { "normal", "insert", "visual", "replace", "command", "inactive" } do
-  if custom_theme[mode] then custom_theme[mode].c = { bg = colors.nord0, fg = colors.nord4 } end
+  if custom_theme[mode] then
+    custom_theme[mode].a = { bg = colors.nord0, fg = colors.nord4, gui = "bold" }
+    custom_theme[mode].b = { bg = colors.nord0, fg = colors.nord4 }
+    custom_theme[mode].c = { bg = colors.nord0, fg = colors.nord4 }
+  end
 end
 
 return {
@@ -99,10 +102,10 @@ return {
         inactive_sections = {},
         sections = {},
         winbar = {
-          lualine_a = { { "filename", path = 1, color = { bg = colors.nord0, fg = colors.nord15 } } },
+          lualine_c = { { "filename", path = 1, color = { bg = colors.nord0, fg = colors.nord15 } } },
         },
         inactive_winbar = {
-          lualine_a = { { "filename", path = 1, color = { bg = colors.nord0, fg = colors.nord3 } } },
+          lualine_c = { { "filename", path = 1, color = { bg = colors.nord0, fg = colors.nord3 } } },
         },
         extensions = {},
       }
