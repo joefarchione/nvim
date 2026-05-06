@@ -74,8 +74,26 @@ vim.api.nvim_create_autocmd("LspAttach", {
       {
         "<leader>lC",
         function()
-          local enabled = not vim.g.codelens_enabled
+          -- Default state is "enabled" (FSAC ships them on); first press disables.
+          local current = vim.g.codelens_enabled ~= false
+          local enabled = not current
           vim.g.codelens_enabled = enabled
+
+          -- FSAC keeps pushing workspace/codeLens/refresh after a local clear(),
+          -- so the only way to actually stop them is to flip the server-side
+          -- setting via didChangeConfiguration.
+          for _, client in ipairs(vim.lsp.get_clients { name = "fsautocomplete" }) do
+            client.settings = vim.tbl_deep_extend("force", client.settings or {}, {
+              FSharp = {
+                CodeLenses = {
+                  Signature = { Enabled = enabled },
+                  References = { Enabled = enabled },
+                },
+              },
+            })
+            client:notify("workspace/didChangeConfiguration", { settings = client.settings })
+          end
+
           if enabled then
             vim.lsp.codelens.refresh()
             Snacks.notify("CodeLens enabled")

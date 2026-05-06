@@ -15,6 +15,20 @@ autocmd("TextYankPost", {
   group = highlight_group,
 })
 
+-- Match shiftwidth/tabstop to each formatter's output so manual indent and
+-- post-format indent agree. Globals stay at 2 (lua/md/json/yaml/cpp); these
+-- override per filetype where the formatter emits 4.
+autocmd("FileType", {
+  desc = "Per-filetype indent to match formatter output",
+  group = augroup("formatter_indent", { clear = true }),
+  pattern = { "python", "fsharp", "rust" },
+  callback = function(args)
+    vim.bo[args.buf].shiftwidth = 4
+    vim.bo[args.buf].tabstop = 4
+    vim.bo[args.buf].softtabstop = 4
+  end,
+})
+
 autocmd("BufReadPre", {
   desc = "Disable certain functionality on very large files",
   group = augroup("large_buf", { clear = true }),

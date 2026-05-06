@@ -267,8 +267,38 @@ return {
     {
       "<leader>nn",
       function()
-        Snacks.terminal("dotnet new list", { win = { style = "terminal" } })
+        -- lang_aware = pass `-lang "F#"`; sln/gitignore are language-neutral.
+        local templates = {
+          { name = "console", lang_aware = true },
+          { name = "classlib", lang_aware = true },
+          { name = "web", lang_aware = true },
+          { name = "webapi", lang_aware = true },
+          { name = "xunit", lang_aware = true },
+          { name = "nunit", lang_aware = true },
+          { name = "mstest", lang_aware = true },
+          { name = "sln", lang_aware = false },
+          { name = "gitignore", lang_aware = false },
+        }
+        local labels = vim.tbl_map(function(t) return t.name end, templates)
+        vim.ui.select(labels, { prompt = "dotnet new template:" }, function(choice)
+          if not choice then return end
+          local template
+          for _, t in ipairs(templates) do
+            if t.name == choice then template = t end
+          end
+          vim.ui.input({ prompt = "Project name (blank = current dir): " }, function(name)
+            local cmd = "dotnet new " .. template.name
+            if template.lang_aware then cmd = cmd .. ' -lang "F#"' end
+            if name and name ~= "" then cmd = cmd .. " -n " .. vim.fn.shellescape(name) end
+            Snacks.terminal(cmd, { win = { style = "terminal" } })
+          end)
+        end)
       end,
+      desc = "dotnet new from template (F#)",
+    },
+    {
+      "<leader>nN",
+      function() Snacks.terminal("dotnet new list", { win = { style = "terminal" } }) end,
       desc = "dotnet new (list templates)",
     },
 

@@ -263,16 +263,17 @@ function M.move_fs_file(from)
   end)
 end
 
---- Add a <Compile Include="rel_path" /> entry to fsproj
---- Inserts after the last existing <Compile> entry, or before </ItemGroup>
+--- Add a <Compile Include="rel_path" /> entry to fsproj.
+--- If `after_rel` is given and present, inserts immediately after that entry.
+--- Otherwise inserts after the last existing <Compile>, or before </ItemGroup>.
 ---@param fsproj string path to .fsproj
 ---@param rel_path string relative path (backslash-separated)
+---@param after_rel string|nil insert directly after this entry if present
 ---@return boolean ok
-function M.add_compile(fsproj, rel_path)
+function M.add_compile(fsproj, rel_path, after_rel)
   local content = read_fsproj(fsproj)
   if not content then return false end
 
-  -- Check if entry already exists
   local escaped = pattern_escape(rel_path)
   if content:match("<Compile%s+Include=\"" .. escaped .. "\"") then
     return true -- already present
@@ -280,7 +281,20 @@ function M.add_compile(fsproj, rel_path)
 
   local new_entry = '    <Compile Include="' .. rel_path .. '" />\n'
 
-  -- Try to insert after the last <Compile> entry
+  -- 1. Try to insert right after `after_rel` if it exists in the file.
+  if after_rel and after_rel ~= "" then
+    local escaped_after = pattern_escape(after_rel)
+    local s, e = content:find("<Compile%s+Include=\"" .. escaped_after .. "\"%s*/>")
+    if not s then
+      s, e = content:find("<Compile%s+Include=\"" .. escaped_after .. "\"%s*>%s*</Compile>")
+    end
+    if s then
+      local eol = content:find("\n", e) or #content
+      return write_fsproj(fsproj, content:sub(1, eol) .. new_entry .. content:sub(eol + 1))
+    end
+  end
+
+  -- 2. Fall back to inserting after the last <Compile> entry.
   local last_compile_pos = nil
   local search_start = 1
   while true do
@@ -295,7 +309,6 @@ function M.add_compile(fsproj, rel_path)
 
   local new_content
   if last_compile_pos then
-    -- Find end of the line after last compile entry
     local eol = content:find("\n", last_compile_pos)
     if eol then
       new_content = content:sub(1, eol) .. new_entry .. content:sub(eol + 1)
@@ -303,7 +316,7 @@ function M.add_compile(fsproj, rel_path)
       new_content = content .. "\n" .. new_entry
     end
   else
-    -- No compile entries yet; insert before first </ItemGroup> or before </Project>
+    -- 3. No compile entries yet; insert before first </ItemGroup> or </Project>.
     local insert_point = content:find "</ItemGroup>" or content:find "</Project>"
     if insert_point then
       new_content = content:sub(1, insert_point - 1) .. new_entry .. content:sub(insert_point)
@@ -402,10 +415,24 @@ function M.create_fs_file(fsproj_path)
   end
 
   local proj_dir = vim.fs.dirname(fsproj)
-  Snacks.input({ prompt = "New F# file (relative to project):", default = "" }, function(value)
-    if not value or value == "" then return end
 
-    -- Ensure .fs extension
+  -- Prefill the prompt with the current buffer's directory (relative to project)
+  -- so new files default next to the file you're editing.
+  local current = vim.api.nvim_buf_get_name(0)
+  local default = ""
+  local current_rel = nil
+  if current ~= "" and M.is_fsharp_file(current) and M.find_fsproj(current) == fsproj then
+    local rel = M.relative_path(fsproj, current):gsub("\\", "/")
+    local dir = vim.fs.dirname(rel)
+    if dir and dir ~= "" and dir ~= "." then
+      default = dir .. "/"
+    end
+    current_rel = M.relative_path(fsproj, current)
+  end
+
+  Snacks.input({ prompt = "New F# file (relative to project):", default = default }, function(value)
+    if not value or value == "" or value == default then return end
+
     if not value:match "%.fsx?$" then
       value = value .. ".fs"
     end
@@ -413,11 +440,9 @@ function M.create_fs_file(fsproj_path)
     local filepath = proj_dir .. "/" .. value
     filepath = vim.fn.fnamemodify(filepath, ":p")
 
-    -- Create parent directories
     local dir = vim.fs.dirname(filepath)
     vim.fn.mkdir(dir, "p")
 
-    -- Create the file with a module declaration
     local module_name = vim.fn.fnamemodify(filepath, ":t:r")
     local f = io.open(filepath, "w")
     if not f then
@@ -427,11 +452,11 @@ function M.create_fs_file(fsproj_path)
     f:write("module " .. module_name .. "\n")
     f:close()
 
-    -- Add to fsproj
+    -- Insert the compile entry immediately after the current file (if any),
+    -- so new files land next to their dependency rather than at the bottom.
     local rel = M.relative_path(fsproj, filepath)
-    M.add_compile(fsproj, rel)
+    M.add_compile(fsproj, rel, current_rel)
 
-    -- Open the file
     vim.cmd.edit(filepath)
     Snacks.notify("Created " .. value .. " (fsproj updated)")
   end)

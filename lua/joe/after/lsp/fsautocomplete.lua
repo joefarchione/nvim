@@ -23,6 +23,9 @@ return {
   end,
   settings = {
     FSharp = {
+      -- Fantomas cold-starts slowly (.NET JIT). Default is ~10s; bump to 30s
+      -- so format-on-save doesn't RPC-error on the first save of a session.
+      fsacFantomasTimeoutSeconds = 30,
       keywordsAutocomplete = true,
       externalAutocomplete = true,
       LSPv2 = true,
@@ -38,11 +41,16 @@ return {
         References = { Enabled = true },
       },
       InlayHints = {
-        ParameterNames = true,
-        TypeAnnotations = true,
+        parameterNames = true,
+        typeAnnotations = true,
+        disableLongTooltip = true,
       },
-      LineLens = { Enabled = "always" },
-      PipelineHints = { Enabled = true },
+      -- LineLens and PipelineHints render server-side virtual text that
+      -- duplicates the InlayHints info but isn't controlled by
+      -- vim.lsp.inlay_hint.enable(), so <leader>ui can't switch them off.
+      -- Keep them disabled and let InlayHints be the single source of truth.
+      LineLens = { Enabled = "never" },
+      PipelineHints = { Enabled = false },
     },
   },
 }

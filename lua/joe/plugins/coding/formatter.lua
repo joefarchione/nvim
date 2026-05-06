@@ -6,7 +6,9 @@ return {
     formatters_by_ft = {
       lua = { "stylua" },
       python = { "isort", "black" }, -- isort runs first, then black
-      fsharp = { "fantomas" },
+      -- F# intentionally omitted: FSAC runs Fantomas internally with caching,
+      -- so we let LSP formatting handle it instead of spawning a fresh dotnet
+      -- process per save (which routinely cold-starts past any sane timeout).
       markdown = { "prettier" },
       json = { "prettier" },
       yaml = { "prettier" },
@@ -17,7 +19,7 @@ return {
 
     default_format_opts = {
       lsp_format = "fallback",
-      timeout_ms = 1000,
+      timeout_ms = 10000,
     },
 
     format_on_save = {
